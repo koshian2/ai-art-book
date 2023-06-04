@@ -1,6 +1,5 @@
 from PIL import Image
 import torch
-import pickle
 from transformers import AutoProcessor, CLIPModel
 import numpy as np
 from diffusers import StableDiffusionPipeline
@@ -8,7 +7,7 @@ from diffusers import StableDiffusionPipeline
 def fine_tuned_image_text_retrival(img_path,
                                    sd_model_names,
                                    additional_corpus_words=None,
-                                   device="cuda:1"):
+                                   device="cuda"):
     with open("data/corpus_20k.txt", "r", encoding="utf-8") as fp:
         word_list = fp.read().split("\n")
     if additional_corpus_words is not None:
@@ -44,10 +43,10 @@ def fine_tuned_image_text_retrival(img_path,
 
 def infernce_finetuned_pikachu_images():
     images = [
-        "output/06/06_1_pikachu.png",
-        "output/06/06_2_pikachu.png",
-        "output/06/06_3_pikachu.png",
-        "output/06/06_4_free_pikachu.jpg",
+        "data/06_1_pikachu.png",
+        "data/06_2_pikachu.png",
+        "data/06_3_pikachu.png",
+        "data/06_4_free_pikachu.jpg",
     ]
     for img_path in images:
         print("----", img_path, "----")
@@ -57,7 +56,4 @@ def infernce_finetuned_pikachu_images():
                                     "nitrosocke/redshift-diffusion"], ["nvinkpunk", "redshift style"])     
 
 if __name__ == "__main__":
-    fine_tuned_image_text_retrival("data/01_base.png",
-                                  ["runwayml/stable-diffusion-v1-5",
-                                   "prompthero/openjourney-v4",
-                                   "NoCrypt/SomethingV2_2"])
+    infernce_finetuned_pikachu_images()

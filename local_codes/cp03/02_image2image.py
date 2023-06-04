@@ -22,6 +22,6 @@ def run_image2image(prompt,
 
 if __name__ == "__main__":
     run_image2image("Cat that landed on Mars, look at viewer, best quality",
-                    base_image="astro_cat2.png",
-                    output_filename="astro_mars.png",
+                    base_image="output/astro_cat2.png",
+                    output_filename="output/astro_mars.png",
                     model_name="NoCrypt/SomethingV2_2", seed=1235)

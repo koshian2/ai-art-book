@@ -2,6 +2,7 @@ from diffusers import StableDiffusionPipeline, UniPCMultistepScheduler
 import torch
 import modal
 import io
+import os
 
 CACHE_DIR = "/cache"
 volume = modal.SharedVolume().persist("model-cache-vol")
@@ -38,6 +39,7 @@ def run_stable_diffusion(prompt,
 def main(prompt, output_filename, 
          model_name="stabilityai/stable-diffusion-2-1-base", 
          seed=1234):
+    os.makedirs(os.path.dirname(output_filename), exist_ok=True)
     with stub.run():
         img_bytes = run_stable_diffusion.call(prompt, model_name, seed)
         with open(output_filename, "wb") as fp:
@@ -45,4 +47,4 @@ def main(prompt, output_filename,
 
 if __name__ == "__main__":
     main("Cat in outer space, look at viewer, best quality",
-          "astro_cat.png", seed=1235)
+          "output/astro_cat_modal.png", seed=1235)

@@ -27,8 +27,8 @@ class AttentionLinearProbe(torch.nn.Module):
         return x
     
 def load_dataset(split, n_sample_per_class=None):
-    text_data = torch.load("output/07/class_embedding.pt")
-    all_data = torch.load(f"output/07/image_{split}.pt")
+    text_data = torch.load("output/class_embedding.pt")
+    all_data = torch.load(f"output/image_{split}.pt")
 
     pickup_indices = []
     y_all = np.array(all_data["class_idx"]).astype(np.int64)

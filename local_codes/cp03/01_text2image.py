@@ -1,5 +1,6 @@
 from diffusers import StableDiffusionPipeline, UniPCMultistepScheduler
 import torch
+import os
 
 def run_stable_diffusion(prompt,
                          output_filename, 
@@ -15,8 +16,11 @@ def run_stable_diffusion(prompt,
 
     generator = torch.Generator(device).manual_seed(seed)
     image = pipe(prompt, negative_prompt=negative_prompt, num_inference_steps=30, generator=generator).images[0]
+    os.makedirs(os.path.dirname(output_filename), exist_ok=True)
     image.save(output_filename)
 
 if __name__ == "__main__":
     run_stable_diffusion("Cat in outer space, look at viewer, best quality",
-                         "astro_cat.png", seed=1234)
+                         "output/astro_cat.png", seed=1234)
+    run_stable_diffusion("Cat in outer space, look at viewer, best quality",
+                         "output/astro_cat2.png", seed=1235)    

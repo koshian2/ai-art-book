@@ -1,7 +1,5 @@
-from transformers import AutoTokenizer, CLIPTextModel, CLIPTextModelWithProjection
-from diffusers import StableDiffusionPipeline
+from transformers import AutoTokenizer, CLIPTextModel
 import torch
-import pickle
 
 def extract_text_embedding():
     with open("data/corpus_20k.txt", "r", encoding="utf-8") as fp:
@@ -19,3 +17,6 @@ def extract_text_embedding():
         clip_pooled_output = outputs.pooler_output  # pooled (EOS token) states
     print(clip_last_hidden_state.shape) # Size([7582, 7, 768])
     print(clip_pooled_output.shape) # torch.Size([7582, 768])
+
+if __name__ == "__main__":
+    extract_text_embedding()

@@ -23,3 +23,6 @@ def text_text_retrieval(query_text):
     print("\n---")
     print(np.array(data["word"])[max_indices].tolist())
     print((similarity[max_indices]*100).astype(np.int32).tolist())
+
+if __name__ == "__main__":
+    text_text_retrieval("traveler")

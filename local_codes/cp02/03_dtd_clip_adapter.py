@@ -26,8 +26,8 @@ class CLIPAdapter(torch.nn.Module):
         return logit
 
 def load_dataset(split, n_sample_per_class=None):
-    text_data = torch.load("output/07/class_embedding.pt")
-    all_data = torch.load(f"output/07/image_{split}.pt")
+    text_data = torch.load("output/class_embedding.pt")
+    all_data = torch.load(f"output/image_{split}.pt")
 
     pickup_indices = []
     y_all = np.array(all_data["class_idx"]).astype(np.int64)
@@ -98,6 +98,8 @@ def main(ratio):
         print(key, max_val_acc)
 
     print(result)
+# all tensor(0.7394)
+# {1: tensor(0.4995), 5: tensor(0.6122), 10: tensor(0.6622), 'all': tensor(0.7394)}
 
 if __name__ == "__main__":
     main(0.2)

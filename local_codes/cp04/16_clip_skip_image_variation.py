@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def clip_skip_image_variation():
-    device = "cuda:1"
+    device = "cuda"
     pipe = StableDiffusionPipeline.from_pretrained("JosephusCheung/ACertainModel", torch_dtype=torch.float16)
     pipe.scheduler = UniPCMultistepScheduler.from_config(pipe.scheduler.config)
     pipe.safety_checker=lambda images, **kwargs: (images, False)
@@ -35,3 +35,12 @@ def clip_skip_image_variation():
 
         image_embeddings = np.concatenate(image_embeddings, axis=0)
         result[i] = image_embeddings.std(axis=-1).mean()
+
+    values = np.array(list(result.values()))
+    plt.bar(result.keys(), result.values())
+    plt.ylim((values.min()*0.99, values.max()*1.01))
+    plt.show()
+    print(result)
+
+if __name__ == "__main__":
+    clip_skip_image_variation()

@@ -1,6 +1,7 @@
 import torch
-import matplotlib.pyplot as plt
+from diffusers import StableDiffusionPipeline, UniPCMultistepScheduler
 from transformers import CLIPTextModel
+import matplotlib.pyplot as plt
 
 def get_indices(pipe, prompt: str):
     """Utility function to list the indices of the tokens you wish to alte"""
@@ -9,7 +10,7 @@ def get_indices(pipe, prompt: str):
     return indices
 
 def main():
-    device = "cuda:1"
+    device = "cuda"
     pipe = StableDiffusionPipeline.from_pretrained("JosephusCheung/ACertainModel", torch_dtype=torch.float16)
     pipe.scheduler = UniPCMultistepScheduler.from_config(pipe.scheduler.config)
     pipe.vae.enable_tiling()
@@ -31,3 +32,21 @@ def main():
         images.append(image)
         norm = prompt_embed[1].std(dim=-1)
         norms.append(norm)
+
+    fig = plt.figure(figsize=(18, 10))
+    for i in range(len(images)):
+        ax = fig.add_subplot(2, 4, i+1)
+        ax.imshow(images[i])
+        ax.set_title(f"Clip skip = {i+1}")
+        ax.axis("off")
+    plt.show()
+    fig = plt.figure(figsize=(18, 8))
+    for i in range(len(norms)):
+        ax = fig.add_subplot(2, 4, i+1)
+        ax.plot(norms[i][:20].detach().cpu().numpy())
+        ax.set_title(f"Clip skip = {i+1}")
+        ax.set_ylim((1.0, 1.2))
+    plt.show()
+
+if __name__ == "__main__":
+    main()

@@ -1,3 +1,14 @@
+from transformers import AutoTokenizer, CLIPTextModel
+from diffusers import StableDiffusionPipeline
+import torch
+
+def inference_clip(word_list, model, tokenizer, device):
+    with torch.no_grad():
+        inputs = tokenizer(word_list, padding=True, return_tensors="pt").to(device)
+
+        outputs = model(**inputs)
+        return outputs.last_hidden_state, outputs.pooler_output
+    
 def check_embedding_sd2():
     with open("data/corpus_20k.txt", "r", encoding="utf-8") as fp:
         word_list = fp.read().split("\n")
@@ -22,7 +33,7 @@ def check_embedding_sd2_delete_last():
     with open("data/corpus_20k.txt", "r", encoding="utf-8") as fp:
         word_list = fp.read().split("\n")
 
-    device = "cuda:1"
+    device = "cuda"
     clip_model = CLIPTextModel.from_pretrained("laion/CLIP-ViT-H-14-laion2B-s32B-b79K")
     clip_tokenizer = AutoTokenizer.from_pretrained("laion/CLIP-ViT-H-14-laion2B-s32B-b79K")
     # 最終層を削除
@@ -39,3 +50,12 @@ def check_embedding_sd2_delete_last():
     diff_pooled = torch.sum(torch.abs(clip_pooled_output - sd_pooled_output)).cpu().numpy()
     print(diff_hidden, diff_pooled) # 20215248.0 0.0
     print(len(clip_model.text_model.encoder.layers), len(sd_text_model.text_model.encoder.layers)) # 23 23
+
+def main():
+    print("--check_embedding_sd2--")
+    check_embedding_sd2()
+    print("--check_embedding_sd2_delete_last--")
+    check_embedding_sd2_delete_last()
+
+if __name__ == "__main__":
+    main()

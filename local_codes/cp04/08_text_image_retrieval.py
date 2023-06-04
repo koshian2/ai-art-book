@@ -24,3 +24,6 @@ def text_image_retrieval(img_path):
     print("\n---")
     print(np.array(data["word"])[max_indices].tolist())
     print((similarity[max_indices]*100).astype(np.int32).tolist())
+
+if __name__ == "__main__":
+    text_image_retrieval("data/01_base.png")

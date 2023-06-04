@@ -37,3 +37,14 @@ def gram_matrix_corrcoef():
     #  [-0.11756978  1.         -0.4284401  -0.36612593]
     #  [ 0.87175378 -0.4284401   1.          0.96286543]
     #  [ 0.81794113 -0.36612593  0.96286543  1.        ]]
+
+def main():
+    print("--manual--")
+    manual()
+    print("--calc_corrcoef--")
+    calc_corrcoef()
+    print("--gram_matrix_corrcoef--")
+    gram_matrix_corrcoef()
+
+if __name__ == "__main__":
+    main()

@@ -34,3 +34,14 @@ def gram_matrix_cosine():
     #  [0.9780132  1.         0.87109737 0.80882106]
     #  [0.94845135 0.87109737 1.         0.98354968]
     #  [0.89769132 0.80882106 0.98354968 1.        ]]
+
+def main():
+    print("--cosine_manual--")
+    cosine_manual()
+    print("--sklearn_cosine--")
+    sklearn_cosine()
+    print("--gram_matrix_cosine--")
+    gram_matrix_cosine()
+
+if __name__ == "__main__":
+    main()

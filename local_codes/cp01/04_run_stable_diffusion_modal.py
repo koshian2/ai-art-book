@@ -1,5 +1,6 @@
 import io
 import modal
+import os
 
 stub = modal.Stub()
 
@@ -27,8 +28,12 @@ async def run_stable_diffusion(prompt: str):
 
     return img_bytes
 
-if __name__ == "__main__":
+def main():
+    os.makedirs("output", exist_ok=True)
     with stub.run():
         img_bytes = run_stable_diffusion.call("Corgi riding a bike in Times Square")
-        with open("output.png", "wb") as f:
+        with open("output/modal_out_image.png", "wb") as f:
             f.write(img_bytes)
+
+if __name__ == "__main__":
+    main()

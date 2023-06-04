@@ -22,3 +22,6 @@ def extract_wordlist():
                 wordsets.add(wstr)
     with open("data/corpus_20k.txt", "w", encoding="utf-8") as fp:
         fp.write("\n".join(wordsets))
+
+if __name__ == "__main__":
+    extract_wordlist()

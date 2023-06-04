@@ -1,4 +1,4 @@
-from transformers import AutoTokenizer, CLIPTextModel, CLIPTextModelWithProjection
+from transformers import AutoTokenizer, CLIPTextModel
 from diffusers import StableDiffusionPipeline
 import torch
 
@@ -26,3 +26,6 @@ def check_embedding_sd1():
     diff_hidden = torch.sum(torch.abs(clip_last_hidden_state - sd_last_hidden_state)).cpu().numpy()
     diff_pooled = torch.sum(torch.abs(clip_pooled_output - sd_pooled_output)).cpu().numpy()
     print(diff_hidden, diff_pooled) # 0.0 0.0
+
+if __name__ == "__main__":
+    check_embedding_sd1()

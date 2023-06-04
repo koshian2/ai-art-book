@@ -1,3 +1,8 @@
+from transformers import AutoTokenizer,  CLIPTextModelWithProjection
+import torch
+import pickle
+import numpy as np
+
 def text_manipulation_retrieval(queries, destinations):
     with open("data/embedding_20k.pkl", "rb") as fp:
         data = pickle.load(fp)
@@ -25,7 +30,6 @@ def text_manipulation_retrieval(queries, destinations):
     print("\n---")
     print(np.array(data["word"])[max_indices].tolist())
     print((similarity[max_indices]*100).astype(np.int32).tolist())
-
 
 if __name__ == "__main__":
     text_manipulation_retrieval(["king", "man", "woman"], ["add", "sub", "add"])

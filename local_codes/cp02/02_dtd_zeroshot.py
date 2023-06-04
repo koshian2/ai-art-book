@@ -7,7 +7,7 @@ import os
 from transformers import CLIPTokenizer, CLIPTextModelWithProjection, CLIPVisionModelWithProjection, AutoProcessor
 
 def get_prompt_embedding():
-    if not os.path.exists("output/07/class_embedding.pt"):
+    if not os.path.exists("output/class_embedding.pt"):
         clip_model = CLIPTextModelWithProjection.from_pretrained("openai/clip-vit-base-patch32")
         clip_processor = CLIPTokenizer.from_pretrained("openai/clip-vit-base-patch32")    
         
@@ -38,14 +38,14 @@ def get_prompt_embedding():
             "class_names": dataset.class_to_idx,
             "embeddings": class_text_embedding.cpu()
         }    
-        torch.save(result, "output/07/class_embedding.pt")
+        torch.save(result, "output/class_embedding.pt")
     else:
-        result = torch.load("output/07/class_embedding.pt")
+        result = torch.load("output/class_embedding.pt")
     
     return result
 
 def get_image_embedding(split):
-    filepath = f"output/07/image_{split}.pt"
+    filepath = f"output/image_{split}.pt"
     if not os.path.exists(filepath):
         clip_model = CLIPVisionModelWithProjection.from_pretrained("openai/clip-vit-base-patch32")
         clip_processor = AutoProcessor.from_pretrained("openai/clip-vit-base-patch32")    
@@ -71,8 +71,10 @@ def get_image_embedding(split):
     return result
 
 def eval_zeroshot():
+    os.makedirs("output", exist_ok=True)
     text_data = get_prompt_embedding()
     image_data = get_image_embedding("test")
+    _ = get_image_embedding("train") # cache train embedding for next step
     with torch.no_grad(), torch.cuda.amp.autocast():
         affine = image_data["embeddings"] @ text_data["embeddings"].T
         y_pred = affine.argmax(dim=-1).cpu().numpy()
@@ -80,3 +82,6 @@ def eval_zeroshot():
 
     correct_flags = np.array(y_true == y_pred)
     print(correct_flags.mean()) # 0.4420212765957447
+
+if __name__ == "__main__":
+    eval_zeroshot()

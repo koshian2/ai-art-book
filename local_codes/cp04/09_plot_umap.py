@@ -12,7 +12,7 @@ def plot_embedding():
     vocab = corpus["word"][::skip_size]
 
     # 次元削減の結果を保存
-    with open("data/umap_reducer", "wb") as fp:
+    with open("data/umap_reducer.pkl", "wb") as fp:
         pickle.dump(reducer, fp)
 
     fig = plt.figure(figsize=(10, 10))

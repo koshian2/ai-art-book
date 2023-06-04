@@ -40,8 +40,10 @@ def embedding_move(queries):
     plt.ylim((normed_embedding[:, 1].min(), normed_embedding[:, 1].max()))
     plt.show()
 
-if __name__ == "__main__":
+def main():
     prompt = "a girl adventurer is walking alone on a hill by the sea, mountains can be seen in the distance in the background, a small field of flowers, 1girl, blue shirts, green vest, knee-length skirt, blonded-hair, leather hair bands, masterpiece, best quality, extremely detailed"
     prompts = prompt.split(", ")
-    queries = []
     embedding_move(prompts)
+
+if __name__ == "__main__":
+    main()
