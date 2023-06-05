@@ -1,3 +1,7 @@
+from diffusers import StableDiffusionPipeline, UniPCMultistepScheduler
+import torch
+import matplotlib.pyplot as plt
+
 def latent_visual_prompt_inpainting(width=1920, height=1024):
     device = "cuda"
     pipe = StableDiffusionPipeline.from_pretrained(
@@ -25,3 +29,14 @@ def latent_visual_prompt_inpainting(width=1920, height=1024):
         latent_second = pipe(prompt=prompt, negative_prompt=negative_prompt, guidance_scale=12,
                             latents=x, num_inference_steps=50, output_type="latent").images
         image_second = pipe.numpy_to_pil(pipe.decode_latents(latent_second))[0]
+
+    fig = plt.figure(figsize=(18, 7))
+    for i, img in enumerate([image_first, image_second]):
+        ax = fig.add_subplot(1, 2, i+1)
+        ax.imshow(img)
+        ax.set_title("initial image" if i == 0 else "after temperature adjusting")
+        ax.axis("off")
+    plt.show()
+
+if __name__ == "__main__":
+    latent_visual_prompt_inpainting()

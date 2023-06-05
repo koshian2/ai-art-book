@@ -1,3 +1,10 @@
+import torch
+from diffusers import StableDiffusionPipeline, UniPCMultistepScheduler
+from transformers import AutoImageProcessor, UperNetForSemanticSegmentation
+from PIL import Image
+import numpy as np
+import matplotlib.pyplot as plt
+
 def noise_seg_mask(width=960, height=512):
     device = "cuda"
     pipe = StableDiffusionPipeline.from_pretrained(
@@ -33,3 +40,14 @@ def noise_seg_mask(width=960, height=512):
     randn_segmask = randn + randn * seg_mask * 0.3
     second_image = pipe(prompt=prompts, negative_prompt=negative_prompt, 
                          num_inference_steps=50, output_type="pil", latents=randn_segmask).images[0]
+    
+    fig = plt.figure(figsize=(18, 7))
+    for i, img in enumerate([initial_image, second_image]):
+        ax = fig.add_subplot(1, 2, i+1)
+        ax.imshow(img)
+        ax.set_title(("w/o" if i == 0 else "with") + " segmentation mask")
+        ax.axis("off")
+    plt.show()
+
+if __name__ == "__main__":
+    noise_seg_mask()

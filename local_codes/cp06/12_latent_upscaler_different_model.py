@@ -1,6 +1,5 @@
 import torch
 from diffusers import StableDiffusionPipeline
-from PIL import Image
 import numpy as np
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
@@ -16,7 +15,7 @@ class DenoisingCallback:
             n = latent.shape[0]
             latent[0:n] = self.initial_value # Avoid call by reference
 
-def run_unit(pipe, prompt, device="cuda:1", width=1920, height=1024):
+def run_unit(pipe, prompt, device="cuda", width=1920, height=1024):
     negative_prompt = "longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality"
 
     with torch.no_grad():
@@ -51,7 +50,7 @@ def merge_network(pipe_source, pipe_merge, attr, ratio):
     return merge_net
 
 def main():
-    device = "cuda:1"
+    device = "cuda"
     pipe = StableDiffusionPipeline.from_pretrained(
         "NoCrypt/SomethingV2_2", torch_dtype=torch.float16)
     pipe.enable_vae_tiling()
@@ -84,7 +83,6 @@ def main():
         ax.imshow(img)
         ax.axis("off")
         ax.set_title(title)
-    fig.savefig("output/05/17_other_pattern.png")
     plt.show()
 
 if __name__ == "__main__":

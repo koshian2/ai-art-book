@@ -157,7 +157,7 @@ class LatentCouplePipeline(StableDiffusionPipeline):
         return StableDiffusionPipelineOutput(images=image, nsfw_content_detected=has_nsfw_concept)
     
 
-def main_latent_couple(width=960*2, height=512*2):
+def main_latent_couple(width=960, height=512):
     device = "cuda:1"    
     pipe = LatentCouplePipeline.from_pretrained(
         "NoCrypt/SomethingV2_2", torch_dtype=torch.float16)
@@ -184,7 +184,7 @@ def main_latent_couple(width=960*2, height=512*2):
     latent = torch.randn((1, 4, height//8, width//8), generator=generator).to(device, torch.float16)
     image = pipe(prompt=prompts, negative_prompt=negative_prompt, mask=masks, 
                  latents=latent, num_inference_steps=50).images[0]
-    image.save("output/05/26_latent_couple_hd.jpg", quality=92)
+    image.save("output/17_latent_couple.jpg", quality=92)
 
 if __name__ == "__main__":
     main_latent_couple()

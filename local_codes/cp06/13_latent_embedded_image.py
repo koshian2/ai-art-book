@@ -2,7 +2,7 @@ import torch
 from diffusers import StableDiffusionPipeline, UniPCMultistepScheduler
 import matplotlib.pyplot as plt
 
-def latent_visual_prompt(second_prompts, width=1920, height=1024):
+def embedded_latent(second_prompts, width=1920, height=1024):
     device = "cuda"
     pipe = StableDiffusionPipeline.from_pretrained(
         "NoCrypt/SomethingV2_2", torch_dtype=torch.float16)
@@ -38,4 +38,15 @@ def main():
         "an autumn scene, masterpiece, best quality, extremely detailed",
         "a winter scene, masterpiece, best quality, extremely detailed",
     ]
-    results = latent_visual_prompt(second_prompts)
+    results = embedded_latent(second_prompts)
+    fig = plt.figure(figsize=(20, 12))
+    titles = ["base_image", "a summer scene", "an autumn scene", "a winter scene"]
+    for i, img in enumerate(results):
+        ax = fig.add_subplot(2, 2, i+1)
+        ax.imshow(img)
+        ax.axis("off")
+        ax.set_title(titles[i])
+    plt.show()
+
+if __name__ == "__main__":
+    main()

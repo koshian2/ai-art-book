@@ -1,11 +1,12 @@
 from diffusers import DiffusionPipeline, UniPCMultistepScheduler
 import torch
 import matplotlib.pyplot as plt
+from settings import MODEL_DIRECTORY
 
 def run_lpw_weighting():
-    device = "cuda:1"
+    device = "cuda"
     pipe = DiffusionPipeline.from_pretrained(
-        "H:/diffusion_models/diffusers/merge_Counterfeit-V3.0_orangemix", torch_dtype=torch.float16,
+        f"{MODEL_DIRECTORY}/merge_Counterfeit-V3.0_orangemix", torch_dtype=torch.float16,
          custom_pipeline="lpw_stable_diffusion"
     )
     pipe.scheduler = UniPCMultistepScheduler.from_config(pipe.scheduler.config)

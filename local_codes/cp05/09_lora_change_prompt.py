@@ -1,8 +1,14 @@
+from diffusers import DiffusionPipeline, UniPCMultistepScheduler
+import torch
+import matplotlib.pyplot as plt
+from utils import load_safetensors_lora
+from settings import MODEL_DIRECTORY, LORA_DIRECTORY
+
 def change_cloth(width=512, height=960):
-    device = "cuda:1"
+    device = "cuda"
     models = [
         "NoCrypt/SomethingV2_2",
-        "H:/diffusion_models/diffusers/merge_Counterfeit-V3.0_orangemix"
+        f"{MODEL_DIRECTORY}/merge_Counterfeit-V3.0_orangemix"
     ]
     model_names = ["SomethingV2_2", "merge"]
     
@@ -14,7 +20,7 @@ def change_cloth(width=512, height=960):
             pipe = DiffusionPipeline.from_pretrained(
                 model, torch_dtype=torch.float16,
                 custom_pipeline="lpw_stable_diffusion")
-            pipe = load_safetensors_lora(pipe, "H:/diffusion_models/lora/lumine1-000008.safetensors", alpha=0.3)
+            pipe = load_safetensors_lora(pipe, f"{LORA_DIRECTORY}/lumine1-000008.safetensors", alpha=0.3)
             pipe.scheduler = UniPCMultistepScheduler.from_config(pipe.scheduler.config)
             pipe.enable_vae_tiling()
             if i != 0:
@@ -35,3 +41,6 @@ def change_cloth(width=512, height=960):
             ax.set_title(f"{model_names[i]} {cloth if cloth != '' else 'None'}")
 
     plt.show()
+
+if __name__ == "__main__":
+    change_cloth()

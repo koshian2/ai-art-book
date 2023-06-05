@@ -1,6 +1,5 @@
 import torch
-from diffusers import StableDiffusionPipeline, StableDiffusionImg2ImgPipeline
-from PIL import Image
+from diffusers import StableDiffusionPipeline
 import numpy as np
 import torch.nn.functional as F
 
@@ -45,3 +44,9 @@ def latent_upsclaer(width=1920, height=1024):
 
         image_big = pipe(prompt=prompt, negative_prompt=negative_prompt, guidance_scale=12,
                          latents=noised_latents[0:1], num_inference_steps=50, callback=warmup_cb.callback, output_type="pil").images[0]
+        
+        image_small.save("output/11_1_latent_upscaler_small.jpg", quality=92)
+        image_big.save("output/11_2_latent_upscaler_big.jpg", quality=92)
+
+if __name__ == "__main__":
+    latent_upsclaer()

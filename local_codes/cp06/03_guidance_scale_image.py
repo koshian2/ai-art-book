@@ -4,9 +4,8 @@ import matplotlib.pyplot as plt
 
 def guidance_scale_compare(width=960, height=512):
     device = "cuda"
-    dtype = torch.float16 if "cuda" in device else torch.float32    
     pipe = StableDiffusionPipeline.from_pretrained(
-        "NoCrypt/SomethingV2_2", torch_dtype=dtype)
+        "NoCrypt/SomethingV2_2", torch_dtype=torch.float16)
     pipe.scheduler = UniPCMultistepScheduler.from_config(pipe.scheduler.config)
     pipe.enable_vae_tiling()
     pipe.to(device)

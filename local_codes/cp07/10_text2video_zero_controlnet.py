@@ -8,7 +8,7 @@ import numpy as np
 def run_text2video_controlnet(model_id, prompt, 
                               conditional_video_path, 
                               output_video_path):
-    device = "cuda:1"
+    device = "cuda"
     # Read conditional video
     reader = imageio.get_reader(conditional_video_path, "ffmpeg")
     pose_images = [Image.fromarray(img) for img in reader.iter_data()]
@@ -56,16 +56,13 @@ def run_text2video_controlnet(model_id, prompt,
 def main():
     run_text2video_controlnet("runwayml/stable-diffusion-v1-5",
                               "a stormtrooper dancing on the beach, best quality, extremely detailed",
-                              "data/dance1_corr.mp4", "output/09/07_text2video_controlnet.mp4")
+                              "data/dance1_corr.mp4", "output/10_1_text2video_controlnet.mp4")
     run_text2video_controlnet("NoCrypt/SomethingV2_2",
                               "Hatsune Miku is dancing on a snowfield, best quality, extremely detailed",
-                              "data/dance2_corr.mp4", "output/09/08_text2video_controlnet.mp4")
+                              "data/dance2_corr.mp4", "output/10_2_text2video_controlnet.mp4")
     run_text2video_controlnet("NoCrypt/SomethingV2_2",
                               "a girl is dancing on a classroom, 1girl, purple hair, best quality, extremely detailed",
-                              "data/dance3_corr.mp4", "output/09/09_text2video_controlnet.mp4")
+                              "data/dance3_corr.mp4", "output/10_3_text2video_controlnet.mp4")
     
 if __name__ == "__main__":
     main()
-
-
-

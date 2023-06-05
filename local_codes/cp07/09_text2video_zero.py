@@ -4,7 +4,7 @@ from diffusers import TextToVideoZeroPipeline, UniPCMultistepScheduler
 from PIL import Image
 
 def run_text2video(model_id, prompt, output_video_path, seed=1234):
-    device = "cuda:1"
+    device = "cuda"
     pipe = TextToVideoZeroPipeline.from_pretrained(model_id, torch_dtype=torch.float16)
     pipe.scheduler = UniPCMultistepScheduler.from_config(pipe.scheduler.config)
     pipe.enable_xformers_memory_efficient_attention()
@@ -29,10 +29,10 @@ def run_text2video(model_id, prompt, output_video_path, seed=1234):
 def main():
     run_text2video("runwayml/stable-diffusion-v1-5",
                    "a panda playing a guitar in times square, best quality, extremely detailed",
-                   "output/09/05_text2video_1.mp4")
+                   "output/09_text2video_1.mp4")
     run_text2video("NoCrypt/SomethingV2_2",
                    "a girl is invoking flame magic from her wand, 1girl, purple hair, best quality, extremely detailed",
-                   "output/09/06_text2video_2.mp4")
+                   "output/09_text2video_2.mp4")
 
 if __name__ == "__main__":
     main()

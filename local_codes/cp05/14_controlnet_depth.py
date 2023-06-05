@@ -3,7 +3,7 @@ from controlnet_aux import MidasDetector
 import torch
 import matplotlib.pyplot as plt
 
-def run_depth(device="cuda:1"):
+def run_depth(device="cuda"):
     pipe = StableDiffusionPipeline.from_pretrained(
         "NoCrypt/SomethingV2_2", torch_dtype=torch.float16)
     pipe.scheduler = UniPCMultistepScheduler.from_config(pipe.scheduler.config)

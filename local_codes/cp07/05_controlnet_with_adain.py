@@ -1,23 +1,14 @@
 
 import torch
-from safetensors.torch import load_file
-
-from diffusers import StableDiffusionPipeline, UniPCMultistepScheduler
+from diffusers import UniPCMultistepScheduler
 from stable_diffusion_reference import StableDiffusionReferencePipeline
 from PIL import Image
 import matplotlib.pyplot as plt
 
-def load_resize(file_name):
-    image = Image.open(file_name)
-    w, h = image.size
-    w, h = (x - x % 8 for x in (w, h))
-    image = image.resize((w, h), resample=Image.LANCZOS)    
-    return image
-
 def main():
     initial_img = Image.open("data/black_hair_girl.png")
 
-    device = "cuda:1"
+    device = "cuda"
     pipe = StableDiffusionReferencePipeline.from_pretrained(
         "NoCrypt/SomethingV2_2", torch_dtype=torch.float16, safety_checker=None)
     pipe.scheduler = UniPCMultistepScheduler.from_config(pipe.scheduler.config)
@@ -39,7 +30,6 @@ def main():
             ax.axis("off")
             if i == 0:
                 ax.set_title(f"style_fidelity={fidelity}")
-    fig.savefig("output/07/03_reference_with_adain.png")
     plt.show()
 
 if __name__ == "__main__":

@@ -53,3 +53,6 @@ def noise_spatial_mask(width=960, height=512, mask_min=0.75, mask_max=1.25):
         ax.axis("off")
         ax.set_title(f"{names[i]}")
     plt.show()
+
+if __name__ == "__main__":
+    noise_spatial_mask()

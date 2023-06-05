@@ -3,7 +3,7 @@ import torch
 import matplotlib.pyplot as plt
 
 def run_local_model(width=512, height=768):
-    device = "cuda:1"    
+    device = "cuda"    
     pipe = StableDiffusionPipeline.from_pretrained(
         "H:/diffusion_models/diffusers/Counterfeit-V3.0", torch_dtype=torch.float16)
     pipe.scheduler = UniPCMultistepScheduler.from_config(pipe.scheduler.config)

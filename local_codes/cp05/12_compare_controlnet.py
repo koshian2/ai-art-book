@@ -18,7 +18,7 @@ def load_resize(path):
     return img
 
 
-def run_controlnet(original_img, condition_img, controlnet_names, device="cuda:1"):
+def run_controlnet(original_img, condition_img, controlnet_names, device="cuda"):
     results = [original_img, condition_img]
     prompt = "best quality, extremely detailed"
     negative_prompt = "longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality"    

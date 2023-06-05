@@ -5,17 +5,10 @@ from stable_diffusion_reference import StableDiffusionReferencePipeline
 from PIL import Image
 import matplotlib.pyplot as plt
 
-def load_resize(file_name):
-    image = Image.open(file_name)
-    w, h = image.size
-    w, h = (x - x % 8 for x in (w, h))
-    image = image.resize((w, h), resample=Image.LANCZOS)    
-    return image
-
 def main():
     initial_img = Image.open("data/texture_leaf.jpg")
 
-    device = "cuda:1"
+    device = "cuda"
     model_id = "NoCrypt/SomethingV2_2"
     pipe = StableDiffusionReferencePipeline.from_pretrained(
         model_id, torch_dtype=torch.float16, safety_checker=None)
@@ -39,7 +32,6 @@ def main():
             ax.axis("off")
             if i == 0:
                 ax.set_title(f"Reference Attn = {use_reference_attn}")
-    fig.savefig("output/07/09_reference_with_adain_no_attn.png")
     plt.show()
 
 if __name__ == "__main__":

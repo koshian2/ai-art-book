@@ -1,6 +1,7 @@
-from diffusers import StableDiffusionPipeline, UniPCMultistepScheduler, StableDiffusionImg2ImgPipeline
+from diffusers import StableDiffusionPipeline, UniPCMultistepScheduler
 import torch
 import torch.nn.functional as F
+import matplotlib.pyplot as plt
 
 def failed_latent_upsampling(width=1920, height=1024):
     device = "cuda"    
@@ -35,3 +36,14 @@ def failed_latent_upsampling(width=1920, height=1024):
                      num_inference_steps=50, latents=x, guidance_scale=12).images
         results.append(image[0])
         titles.append("Initial Latent x2 - "+method)
+
+    fig = plt.figure(figsize=(15, 8))
+    for i, (img, title) in enumerate(zip(results, titles)):
+        ax = fig.add_subplot(2, 2, i+1)
+        ax.imshow(img)
+        ax.set_title(title)
+        ax.axis("off")
+    plt.show()
+
+if __name__ == "__main__":
+    failed_latent_upsampling()

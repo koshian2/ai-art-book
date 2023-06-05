@@ -4,21 +4,9 @@ from transformers import AutoImageProcessor, UperNetForSemanticSegmentation
 from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
+from utils import load_resize, ade_palette
 
-ada_palette = np.asarray(...) # 長いので省略
-
-def load_resize(path):
-    img = Image.open(path)
-    if img.width > img.height:
-        height = 512
-        width = int((img.width / img.height * 512) // 8 * 8)
-    else:
-        width = 512
-        height = int((img.height / img.width * 512) // 8 * 8)
-    img = img.resize((width, height), Image.Resampling.BICUBIC)
-    return img
-
-def run_depth(device="cuda:1"):
+def run_depth(device="cuda"):
     # Load image
     intial_image = load_resize("data/shibuya_crossing.jpg")
 
@@ -31,7 +19,7 @@ def run_depth(device="cuda:1"):
         outputs = image_segmentor(pixel_values)
     seg = image_processor.post_process_semantic_segmentation(outputs, target_sizes=[intial_image.size[::-1]])[0]
     color_seg = np.zeros((seg.shape[0], seg.shape[1], 3), dtype=np.uint8) # height, width, 3
-    for label, color in enumerate(ada_palette):
+    for label, color in enumerate(ade_palette):
         color_seg[seg == label, :] = color
     color_seg = color_seg.astype(np.uint8)
     control_image = Image.fromarray(color_seg)

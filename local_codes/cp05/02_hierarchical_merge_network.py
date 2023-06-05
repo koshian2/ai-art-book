@@ -19,7 +19,7 @@ def hierarchal_merge_network(pipe_source, pipe_merge, attr, default_ratio, addit
     return merge_net
 
 def hierarchal_merge_compare():
-    device = "cuda:1"
+    device = "cuda"
     pipe_pastel = StableDiffusionPipeline.from_pretrained(
         "andite/pastel-mix", torch_dtype=torch.float16)    
 
@@ -52,7 +52,7 @@ def hierarchal_merge_compare():
         displayed_images = sum(displayed_images, start=[])
         displayed_images = np.array([np.array(x) for x in displayed_images]) / 255.0
         displayed_images = torch.from_numpy(displayed_images).permute(0, 3, 1, 2)
-        torchvision.utils.save_image(displayed_images, f"output/06/10_hierarchal_merge_{i}.png", nrow=3)
+        torchvision.utils.save_image(displayed_images, f"output/02_hierarchal_merge_{i}.png", nrow=3)
 
 if __name__ == "__main__":
     hierarchal_merge_compare()

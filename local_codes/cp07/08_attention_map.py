@@ -3,7 +3,7 @@ from diffusers.models.attention_processor import Attention
 from diffusers import StableDiffusionPipeline, UniPCMultistepScheduler
 import torch
 
-class MyAttnProcessor:
+class StoreAttentionMapProcessor:
     def __init__(self, module_name, width, height):
         super().__init__()
         self.module_name = module_name
@@ -94,9 +94,8 @@ def main(width=960, height=512):
         "NoCrypt/SomethingV2_2", torch_dtype=torch.float16)
     pipe.scheduler = UniPCMultistepScheduler.from_config(pipe.scheduler.config)
     for name, module in list_attention_processors(pipe):
-        module.set_processor(MyAttnProcessor(name, width, height))
+        module.set_processor(StoreAttentionMapProcessor(name, width, height))
 
-    # enable_attention_couple(pipe)
     pipe.enable_vae_tiling()
     pipe.to(device)
 
@@ -115,8 +114,7 @@ def main(width=960, height=512):
             attn_maps.append(attn_map)
     attn_maps = torch.stack(attn_maps, dim=0).mean(dim=0).cpu().numpy()
 
-    image.save("output/07/11_attention_map_image.jpg", quality=92)
-
+    image.save("output/08_1_attention_map_original_image.jpg", quality=92)
 
     fig = plt.figure(figsize=(20, 8))
     for i in range(18):
@@ -124,7 +122,7 @@ def main(width=960, height=512):
         ax.imshow(attn_maps[i])
         ax.axis("off")
         ax.set_title(token_indices[i])
-    fig.savefig("output/07/11_attention_map.png")
+    fig.savefig("output/08_2_attention_map.png")
     plt.show()
 
 if __name__ == "__main__":

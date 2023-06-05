@@ -6,14 +6,8 @@ import glob
 from safetensors.torch import load_file
 from laion_face_common import generate_annotation
 import matplotlib.pyplot as plt
-
-def load_safetensors_lora(pipeline,
-                          checkpoint_path,
-                          LORA_PREFIX_UNET = "lora_unet",
-                          LORA_PREFIX_TEXT_ENCODER = "lora_te",
-                          alpha = 0.75):
-    # 省略
-    return pipeline
+from utils import load_safetensors_lora
+from settings import LORA_DIRECTORY
 
 def load_fer2013():
     dataset = {}
@@ -46,12 +40,12 @@ def show_dataset(dataset):
             ax.set_title(f"{emotion} {j+1}")
     plt.show()
 
-def run_pose_mediapipe_face(device="cuda:1"):
+def run_pose_mediapipe_face(device="cuda"):
     controlnet = ControlNetModel.from_pretrained("CrucibleAI/ControlNetMediaPipeFace", 
                                                  subfolder="diffusion_sd15", torch_dtype=torch.float16)
     pipe = StableDiffusionControlNetPipeline.from_pretrained(
         "NoCrypt/SomethingV2_2", controlnet=controlnet, torch_dtype=torch.float16)
-    pipe = load_safetensors_lora(pipe, "H:/diffusion_models/lora/lumine1-000008.safetensors", alpha=0.6)
+    pipe = load_safetensors_lora(pipe, f"{LORA_DIRECTORY}/lumine1-000008.safetensors", alpha=0.6)
     pipe.scheduler = UniPCMultistepScheduler.from_config(pipe.scheduler.config)
     pipe.to(device)
 

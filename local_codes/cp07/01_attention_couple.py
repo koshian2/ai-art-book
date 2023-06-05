@@ -3,8 +3,9 @@ import torch
 from diffusers.models.attention_processor import AttnProcessor2_0, Attention
 import torch.nn.functional as F
 from torch import FloatTensor
-import numpy as np
+import os
 from PIL import Image
+import matplotlib.pyplot as plt
 
 class AttentionCoupleProcessor(AttnProcessor2_0):
     def __init__(self, width, height, region_mask):
@@ -99,34 +100,13 @@ class AttentionCouplePipeline(StableDiffusionPipeline):
         for name, module in self.unet.named_children():
             self._hack_attention_processor(name, module, processors, width, height, region_mask)
 
-def main(width=960, height=512):
-    device = "cuda:1"    
+def run_attention_couple(prompts, masks, width=960, height=512, device="cuda"):
     pipe = AttentionCouplePipeline.from_pretrained(
         "NoCrypt/SomethingV2_2", torch_dtype=torch.float16)
     pipe.scheduler = UniPCMultistepScheduler.from_config(pipe.scheduler.config)
     pipe.enable_vae_tiling()
 
-    prompts = [
-        "two girls standing in a lavender field in the countryside and having fun, best quality, extremely detailed",
-        "a girl enjoying the scent of flowers, 1girl, standing, beautiful girl with long blonde hair like a fairy tale princess, blue eyes, white dress, sandals, best quality, extremely detailed",
-        "a girl taking a photo, 1girl, standing, healthy girl, wheat-colored skin tan, large eyes, colorful floral shirt, short cut hair, black hair, denim shorts, best quality, extremely detailed",
-        # "a lavender field in the countryside, best quality, extremely detailed",
-    ]
     negative_prompt = "longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality"
-    # 全体、左1/3、右1/3でマスクを作る
-    all_mask = torch.ones((1, 1, height//8, width//8), dtype=torch.float16)
-    # left_mask, middle_mask, right_mask = all_mask.clone(), all_mask.clone(), all_mask.clone()
-    # left_mask[:, :, :, width//24:] = 0 # 横1/3～をオフ
-    # middle_mask[:, :, :, :width//24] = 0 # 左1/3をオフ
-    # middle_mask[:, :, :, width//12:] = 0 # 右1/3をオフ
-    # right_mask[:, :, :, :width//12] = 0 # 横2/3～をオフ
-    # masks = torch.cat([all_mask, left_mask*1.5, middle_mask*1.5, right_mask], dim=0).to(device)
-    left_mask, middle_mask = all_mask.clone(), all_mask.clone()
-    left_mask[:, :, :, width//24:] = 0 # 横1/3～をオフ
-    middle_mask[:, :, :, :width//24] = 0 # 左1/3をオフ
-    middle_mask[:, :, :, width//12:] = 0 # 右1/3をオフ
-    masks = torch.cat([all_mask, left_mask*1.5, middle_mask*1.5], dim=0).to(device)
-
     pipe.enable_attention_couple(width, height, masks)
     pipe.to(device)
 
@@ -135,24 +115,48 @@ def main(width=960, height=512):
     latent = torch.randn((1, 4, height//8, width//8), generator=generator).to(device, torch.float16)
     image = pipe(prompt=prompts, negative_prompt=negative_prompt, 
                  latents=latent, num_inference_steps=50).images[0]
-    image.save("output/05/28_attention_couple_low_3.jpg", quality=92)
+    return image
 
-import matplotlib.pyplot as plt
+def main(width=960, height=512):
+    device = "cuda"
+    prompts = [
+        "two girls standing in a lavender field in the countryside and having fun, best quality, extremely detailed",
+        "a girl enjoying the scent of flowers, 1girl, standing, beautiful girl with long blonde hair like a fairy tale princess, blue eyes, white dress, sandals, best quality, extremely detailed",
+        "a girl taking a photo, 1girl, standing, healthy girl, wheat-colored skin tan, large eyes, colorful floral shirt, short cut hair, black hair, denim shorts, best quality, extremely detailed",
+        "a lavender field in the countryside, best quality, extremely detailed"
+    ]
+    os.makedirs("output", exist_ok=True)
 
-def visualize():
-    left = Image.open("output/05/28_attention_couple_low_3.jpg")
-    right = Image.open("output/05/28_attention_couple_low.jpg")
+    # all left right
+    all_mask = torch.ones((1, 1, height//8, width//8), dtype=torch.float16)
+    left_mask, middle_mask = all_mask.clone(), all_mask.clone()
+    left_mask[:, :, :, width//24:] = 0 # 横1/3～をオフ
+    middle_mask[:, :, :, :width//24] = 0 # 左1/3をオフ
+    middle_mask[:, :, :, width//12:] = 0 # 右1/3をオフ
+    masks = torch.cat([all_mask, left_mask*1.5, middle_mask*1.5], dim=0).to(device)
+    divide_two = run_attention_couple(prompts[:3], masks, width=width, height=height, device=device)
+    divide_two.save("output/01_attention_couple_div2.jpg", quality=92)
+
+   # all left middle right
+    all_mask = torch.ones((1, 1, height//8, width//8), dtype=torch.float16)
+    left_mask, middle_mask, right_mask = all_mask.clone(), all_mask.clone(), all_mask.clone()
+    left_mask[:, :, :, width//24:] = 0 # 横1/3～をオフ
+    middle_mask[:, :, :, :width//24] = 0 # 左1/3をオフ
+    middle_mask[:, :, :, width//12:] = 0 # 右1/3をオフ
+    right_mask[:, :, :, :width//12] = 0 # 横2/3～をオフ
+    masks = torch.cat([all_mask, left_mask*1.5, middle_mask*1.5, right_mask], dim=0).to(device)
+    divide_three = run_attention_couple(prompts, masks, width=width, height=height, device=device)
+    divide_three.save("output/01_attention_couple_div3.jpg", quality=92)
+
+    # visualize
     fig = plt.figure(figsize=(18, 8))
     titles = ["prompt = [all, left, right]", "prompt = [all, left, middle, right]"]
-    for i, img in enumerate([left, right]):
+    for i, img in enumerate([divide_two, divide_three]):
         ax = fig.add_subplot(1, 2, i+1)
         ax.imshow(img)
         ax.axis("off")
         ax.set_title(titles[i])
-    fig.savefig("output/05/30_attention_couple_low.png")
     plt.show()
 
-
 if __name__ == "__main__":
-    visualize()
-    # main()
+    main()

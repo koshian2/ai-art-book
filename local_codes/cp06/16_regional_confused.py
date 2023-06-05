@@ -1,5 +1,6 @@
 from diffusers import StableDiffusionPipeline, UniPCMultistepScheduler
 import torch
+import matplotlib.pyplot as plt
 
 def two_people_wo_latent_couple(width=960, height=512):
     device = "cuda:1"    
@@ -19,4 +20,8 @@ def two_people_wo_latent_couple(width=960, height=512):
     latent = torch.randn((1, 4, height//8, width//8), generator=generator).to(device, torch.float16)
     image = pipe(prompt=prompt, negative_prompt=negative_prompt,
                  latents=latent, num_inference_steps=50).images[0]
-    image.save("output/05/27_wo_latent_couple.jpg", quality=92)
+    plt.imshow(image)
+    plt.show()
+
+if __name__ == "__main__":
+    two_people_wo_latent_couple()

@@ -1,8 +1,9 @@
 import torch
 from diffusers import StableDiffusionPipeline, UniPCMultistepScheduler
+import matplotlib.pyplot as plt
 
 def noise_scale(width=960, height=512):
-    device = "cuda:1"
+    device = "cuda"
     pipe = StableDiffusionPipeline.from_pretrained(
         "NoCrypt/SomethingV2_2", torch_dtype=torch.float16)
     pipe.scheduler = UniPCMultistepScheduler.from_config(pipe.scheduler.config)
@@ -29,24 +30,13 @@ def noise_scale(width=960, height=512):
                     num_inference_steps=50, output_type="pil", latents=latent).images[0]
         result.append({"mode": "Noise Scale", "value": scale, "pic": image})
 
-    with open("output/05/06_noise_scale.pkl", "wb") as fp:
-        pickle.dump(result, fp)
-
-import pickle
-import matplotlib.pyplot as plt
-
-def visualize():
-    with open("output/05/06_noise_scale.pkl", "rb") as fp:
-        data = pickle.load(fp)
     fig = plt.figure(figsize=(16, 12))
-    for i, item in enumerate(data):
+    for i, item in enumerate(result):
         ax = fig.add_subplot(4, 3, i+1)
         ax.imshow(item["pic"])
         ax.axis("off")
         ax.set_title(f"{item['mode']}={item['value']}")
-    fig.savefig("output/05/07_noise_scale.png")
     plt.show()
 
 if __name__ == "__main__":
-    # noise_scale()
-    visualize()
+    noise_scale()

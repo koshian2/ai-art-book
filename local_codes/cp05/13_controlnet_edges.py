@@ -51,14 +51,11 @@ def run_softedge(input_image):
     control_image = processor(input_image)
     return control_image, checkpoint
 
-def run_all(device="cuda:1"):
-    initial_image = Image.open("data/black_hair_girl.png")
-    # initial_image = Image.open("data/building.jpg")
+def run_all(prompt, source_img_path, device="cuda"):
+    initial_image = Image.open(source_img_path)
 
     modes = ["canny", "mlsd", "lineart", "lineart_anime", "scribble", "softedge"]
     functions = [run_canny, run_mlsd, run_lineart, run_lineart_anime, run_scribble, run_softedge]
-    prompt = "1girl, look at viewer, best quality, extremely detailed"
-    # prompt = "the building where the god who must be defeated as the last boss lives, best quality, extremely detailed"
     negative_prompt = "longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality"    
 
     conditions, generated = [], []
@@ -89,5 +86,11 @@ def run_all(device="cuda:1"):
         ax.set_title(modes[i % n] + (" cond" if i // n == 0 else " generated"))
     plt.show()
 
+def main():
+    prompt = "1girl, look at viewer, best quality, extremely detailed"
+    run_all(prompt, "data/black_hair_girl.png")
+    prompt = "the building where the god who must be defeated as the last boss lives, best quality, extremely detailed"
+    run_all(prompt, "data/building.jpg")
+
 if __name__ == "__main__":
-    run_all()
+    main()

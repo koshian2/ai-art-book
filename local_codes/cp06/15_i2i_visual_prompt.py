@@ -40,3 +40,8 @@ def i2i_visual_prompt(width=960, height=512):
     generator = torch.Generator().manual_seed(1234)
     image = pipe(prompt=prompt, negative_prompt=negative_prompt, generator=generator,
                  num_inference_steps=50, output_type="pil", image=canvas, strength=1).images[0]
+    plt.imshow(image)
+    plt.show()
+
+if __name__ == "__main__":
+    i2i_visual_prompt()

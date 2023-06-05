@@ -7,7 +7,12 @@ import numpy as np
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
+import os
 import torchvision
+
+### --- Important ---
+### CP04の05_cache_embedding.pyを先に実行して、「embedding_20k.pkl」を「data」フォルダに配置してください
+### -----------------
 
 def merge_network(pipe_source, pipe_merge, attr, ratio):
     merge_net = copy.deepcopy(getattr(pipe_source, attr))
@@ -19,7 +24,7 @@ def merge_network(pipe_source, pipe_merge, attr, ratio):
     return merge_net
 
 def main():
-    device = "cuda:1"
+    device = "cuda"
     pipe_pastel = StableDiffusionPipeline.from_pretrained(
         "andite/pastel-mix", torch_dtype=torch.float16)    
 
@@ -51,7 +56,8 @@ def main():
     displayed_images = sum(displayed_images, start=[])
     displayed_images = np.array([np.array(x) for x in displayed_images]) / 255.0
     displayed_images = torch.from_numpy(displayed_images).permute(0, 3, 1, 2)
-    torchvision.utils.save_image(displayed_images, "output/05/47_merge_networks_.jpg", quality=92, nrow=4)
+    os.makedirs("output", exist_ok=True)
+    torchvision.utils.save_image(displayed_images, "output/01_merge_networks.jpg", quality=92, nrow=4)
 
     clip_model = CLIPVisionModelWithProjection.from_pretrained("openai/clip-vit-large-patch14").to(device)
     clip_processor = AutoProcessor.from_pretrained("openai/clip-vit-large-patch14")

@@ -1,6 +1,7 @@
 from diffusers import StableDiffusionPipeline, UniPCMultistepScheduler, StableDiffusionImg2ImgPipeline
 import torch
 from PIL import Image
+import matplotlib.pyplot as plt
 
 def progressive_i2i(width=1920, height=1024):
     device = "cuda"    
@@ -27,3 +28,15 @@ def progressive_i2i(width=1920, height=1024):
     pipe = StableDiffusionImg2ImgPipeline(**pipe.components)
     second_image = pipe(prompt=prompt, negative_prompt=negative_prompt, image=upsampled_image,
                          num_inference_steps=30, output_type="pil", strength=0.7).images[0]
+    second_image.save("output/09_progressive_i2i.png")
+
+    fig = plt.figure(figsize=(18, 7))
+    for i, img in enumerate([initial_image, second_image]):
+        ax = fig.add_subplot(1, 2, i+1)
+        ax.imshow(img)
+        ax.set_title("initial image" if i == 0 else "second image")
+        ax.axis("off")
+    plt.show()
+
+if __name__ == "__main__":
+    progressive_i2i()

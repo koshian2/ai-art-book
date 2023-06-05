@@ -2,6 +2,7 @@ from diffusers import StableDiffusionPipeline, UniPCMultistepScheduler
 import torch
 from diffusers.models.attention_processor import AttnProcessor2_0, Attention
 import torch.nn.functional as F
+import matplotlib.pyplot as plt
 
 class AttentionCoupleProcessor(AttnProcessor2_0):
     def __init__(self, width, height, region_mask):
@@ -89,24 +90,25 @@ class AttentionCouplePipeline(StableDiffusionPipeline):
             self._hack_attention_processor(name, module, processors, width, height, region_mask)
 
 
-def main_explorer(width=960*2, height=512*2):
-    device = "cuda:1"    
+def compare_explorer(width=960*2, height=512*2):
+    result = []
+    device = "cuda"    
     pipe = StableDiffusionPipeline.from_pretrained(
         "NoCrypt/SomethingV2_2", torch_dtype=torch.float16)
     pipe.scheduler = UniPCMultistepScheduler.from_config(pipe.scheduler.config)
     pipe.enable_vae_tiling()
     pipe.to(device)
 
+    ## 1. Normal Run
     prompt = "a girl adventurer is walking alone on a hill by the sea, mountains can be seen in the distance in the background, a small field of flowers, 1girl, blue shirts, green vest, knee-length skirt, blonded-hair, leather hair bands, masterpiece, best quality, extremely detailed"
     negative_prompt = "longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality"
-    # 乱数は1個で初期化
     generator = torch.Generator().manual_seed(1234)
     latent = torch.randn((1, 4, height//8, width//8), generator=generator).to(device, torch.float16)
-    # image = pipe(prompt=prompt, negative_prompt=negative_prompt, guidance_scale=12,
-    #              latents=latent, num_inference_steps=50).images[0]
-    # image.save("output/05/30_1_normal.jpg", quality=92)
+    image = pipe(prompt=prompt, negative_prompt=negative_prompt, guidance_scale=12,
+                 latents=latent, num_inference_steps=50).images[0]
+    result.append(image)
 
-    #-----
+    ## 2. Attention Couple + Different Neg Prompt
     pipe = AttentionCouplePipeline.from_pretrained(
         "NoCrypt/SomethingV2_2", torch_dtype=torch.float16)
     pipe.scheduler = UniPCMultistepScheduler.from_config(pipe.scheduler.config)
@@ -137,10 +139,9 @@ def main_explorer(width=960*2, height=512*2):
     latent = torch.randn((1, 4, height//8, width//8), generator=generator).to(device, torch.float16)
     image = pipe(prompt=prompts, negative_prompt=negative_prompts, guidance_scale=12,
                  latents=latent, num_inference_steps=50).images[0]
-    image.save("output/05/30_4_exploere_attention_couple.jpg", quality=92)
+    result.append(image)
 
-    ## ---
-
+    ## 3. Attention Couple + Same Neg Prompt
     prompts = [
         "a girl adventurer is walking alone on a hill by the sea, mountains can be seen in the distance in the background, masterpiece, best quality, extremely detailed",
         "a girl adventurer is walking alone on a hill by the sea, 1girl, blue shirts, green vest, knee-length skirt, blonded-hair, leather hair bands, masterpiece, best quality, extremely detailed",
@@ -151,10 +152,23 @@ def main_explorer(width=960*2, height=512*2):
         "longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, extra legs, cropped, worst quality, low quality",
         "longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, extra legs, cropped, worst quality, low quality",
     ]
-    # image = pipe(prompt=prompts, negative_prompt=negative_prompts, guidance_scale=12,
-    #              latents=latent, num_inference_steps=50).images[0]
-    # image.save("output/05/30_3_exploere_attention_couple_same_neg.jpg", quality=92)
+    image = pipe(prompt=prompts, negative_prompt=negative_prompts, guidance_scale=12,
+                 latents=latent, num_inference_steps=50).images[0]
+    result.append(image)
 
+    return result
+
+def main():
+    images = compare_explorer()
+    titles = ["normal", "different_neg_prompt", "same_neg_prompt"]
+    fig = plt.figure(figsize=(20, 8))
+    for i, title in enumerate(titles):
+        ax = fig.add_subplot(1, 3, i+1)
+        ax.imshow(images[i])
+        ax.axis("off")
+        ax.set_title(title)
+        images[i].save(f"output/02_{i+1}_compare_attn_couple_{title}.jpg", quality=92)
+    plt.show()
 
 if __name__ == "__main__":
-    main_explorer()
+    main()
