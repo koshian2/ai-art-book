@@ -7,10 +7,10 @@ Repository for "The New Era of AI Art: Image Generation Techniques Using CLIP an
 [https://techbookfest.org/product/8CFiatcRSM9D88iAupz5LD?productVariantID=7EwE78D2TwYBXHTxwRJwzc](https://techbookfest.org/product/8CFiatcRSM9D88iAupz5LD?productVariantID=7EwE78D2TwYBXHTxwRJwzc)
 
 # ToDO List
-□ 現状ファイルだけおいたコードを、ローカルで実行可能なコードにする  
+✓ 現状ファイルだけおいたコードを、ローカルで実行可能なコードにする  
 □ Modalのコードを追加する
 
-□ Make the code that is currently only in a file into locally executable code  
+✓ Make the code that is currently only in a file into locally executable code  
 □ Add Modal code
 
 # License
