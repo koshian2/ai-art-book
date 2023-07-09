@@ -8,10 +8,10 @@ Repository for "The New Era of AI Art: Image Generation Techniques Using CLIP an
 
 # ToDO List
 ✓ 現状ファイルだけおいたコードを、ローカルで実行可能なコードにする  
-□ Modalのコードを追加する
+✓ Modalのコードを追加する
 
 ✓ Make the code that is currently only in a file into locally executable code  
-□ Add Modal code
+✓ Add Modal code
 
 # License
 本の著作権は著者が保有しますが、本書のコードおよび本リポジトリはMITライセンスで使えます
